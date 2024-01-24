@@ -34,7 +34,7 @@ const packageJson = getPackageJson();
         blockHeader(`Build Styles Watch ${dim(packageJson.version)}`);
         await asyncForEach(files, async (file, index) => {
 
-            const compiled = await compileSass(file.data);
+            const compiled = await compileSass(file);
             file.css = compiled.css;
 
             const linted = await lintFile(file.data);
@@ -71,11 +71,10 @@ const packageJson = getPackageJson();
         await asyncForEach(files, async (file) => {
 
 
-            const compiled = await compileSass(file.data);
+            const compiled = await compileSass(file);
             file.css = compiled.css;
 
             const linted = await lintFile(file.data);
-
             file.lint = linted;
 
             const write = await writeData(file, config);

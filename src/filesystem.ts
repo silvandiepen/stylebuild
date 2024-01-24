@@ -17,8 +17,6 @@ export const writeData = async (file: File, config: Config): Promise<boolean> =>
         await mkdir(dir, { recursive: true });
 
         if(!data) {
-            console.log(path);
-            console.log(data);
             return false;
         }
 

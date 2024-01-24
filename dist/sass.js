@@ -7,10 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { compileString } from 'sass';
-export const compileSass = (data) => __awaiter(void 0, void 0, void 0, function* () {
+import { compile } from 'sass';
+export const compileSass = (file) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = compileString(data);
+        const result = compile(file.path);
         return result;
     }
     catch (e) {

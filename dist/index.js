@@ -31,7 +31,7 @@ const args = getArgs();
         const files = yield getFiles(config, config.entry, null, null);
         blockHeader(`Build Styles Watch ${dim(packageJson.version)}`);
         yield asyncForEach(files, (file, index) => __awaiter(void 0, void 0, void 0, function* () {
-            const compiled = yield compileSass(file.data);
+            const compiled = yield compileSass(file);
             file.css = compiled.css;
             const linted = yield lintFile(file.data);
             file.lint = linted;
@@ -56,7 +56,7 @@ const args = getArgs();
         blockMid('Files');
         const files = yield getFiles(config, config.entry, null, null);
         yield asyncForEach(files, (file) => __awaiter(void 0, void 0, void 0, function* () {
-            const compiled = yield compileSass(file.data);
+            const compiled = yield compileSass(file);
             file.css = compiled.css;
             const linted = yield lintFile(file.data);
             file.lint = linted;

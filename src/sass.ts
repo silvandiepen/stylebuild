@@ -1,11 +1,11 @@
 
-import { compileString } from 'sass';
+import { compile } from 'sass';
+import { File } from "./types"
 
-export const compileSass = async (data: string): Promise<{ css: string }> => {
+export const compileSass = async (file: File): Promise<{ css: string }> => {
     try {
-        const result = compileString(data);
+        const result = compile(file.path);
         return result;
-
     } catch (e) {
         return e;
     }

@@ -1,7 +1,7 @@
 
 import { fileURLToPath } from 'url';
 import { readdirSync, statSync, readFileSync, existsSync } from 'fs';
-import { join,dirname } from 'path';
+import { join, dirname } from 'path';
 import { asyncForEach } from './utils.js';
 
 import { File, Config } from "./types.js"
@@ -74,6 +74,7 @@ export const resolvePackageFile = (files: string[]): string[] => {
 
 export const getFileData = async (file: File, config: Config) => {
     const { cache } = config || { cache: { data: {} } };
+
     if (cache.data[file.id]) {
         return cache[file.id];
     }
