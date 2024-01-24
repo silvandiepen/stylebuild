@@ -15,8 +15,11 @@ export const writeData = (file, config) => __awaiter(void 0, void 0, void 0, fun
     const data = css || "";
     try {
         yield mkdir(dir, { recursive: true });
-        if (!data)
+        if (!data) {
+            console.log(path);
+            console.log(data);
             return false;
+        }
         yield writeFile(path, data, { encoding: 'utf8', flag: 'w' });
         return true;
     }
