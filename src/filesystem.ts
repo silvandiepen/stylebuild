@@ -12,11 +12,12 @@ export const writeData = async (file: File, config: Config): Promise<boolean> =>
 
     const data = css || "";
 
-    console.log(typeof data, data)
-
     try {
 
         await mkdir(dir, { recursive: true });
+
+        if(!data) return false;
+
         await writeFile(path, data, { encoding: 'utf8', flag: 'w' });
 
         return true;

@@ -13,9 +13,10 @@ export const writeData = (file, config) => __awaiter(void 0, void 0, void 0, fun
     const path = (config.outputDir || './dist') + '/' + name.replace('.scss', '.css');
     const dir = path.substring(0, path.lastIndexOf('/'));
     const data = css || "";
-    console.log(typeof data, data);
     try {
         yield mkdir(dir, { recursive: true });
+        if (!data)
+            return false;
         yield writeFile(path, data, { encoding: 'utf8', flag: 'w' });
         return true;
     }
