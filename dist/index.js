@@ -9,31 +9,63 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const args_1 = require("@sil/args");
-const get_1 = require("./get");
-const config_1 = require("./config");
-const cli_block_1 = require("cli-block");
-const utils_1 = require("./utils");
-const sass_1 = require("./sass");
-const lint_1 = require("./lint");
-const log_1 = require("./log");
-const filesystem_1 = require("./filesystem");
-const args = (0, args_1.getArgs)();
+import { getArgs } from '@sil/args';
+import { getFiles } from "./get.js";
+import { getConfig } from './config.js';
+import { blockSettings, blockHeader, blockFooter, blockMid } from 'cli-block';
+import { asyncForEach } from './utils.js';
+import { compileSass } from './sass.js';
+import { lintFile } from './lint.js';
+import { logFile } from './log.js';
+import { writeData } from './filesystem.js';
+const args = getArgs();
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    (0, cli_block_1.blockHeader)();
-    (0, cli_block_1.blockMid)('Config');
-    const config = (0, config_1.getConfig)(args);
-    yield (0, cli_block_1.blockSettings)(config);
-    (0, cli_block_1.blockMid)('Files');
-    const files = yield (0, get_1.getFiles)(config, config.entry, null, null);
-    yield (0, utils_1.asyncForEach)(files, (file, index) => __awaiter(void 0, void 0, void 0, function* () {
-        const compiled = yield (0, sass_1.compileSass)(file.data);
-        file.css = compiled.css;
-        const linted = yield (0, lint_1.lintFile)(file.data);
-        file.lint = linted;
-        const write = yield (0, filesystem_1.writeData)(file, config);
-        yield (0, log_1.logFile)(file, write);
-    }));
+    const config = getConfig(args);
+    if (args.watch) {
+        /**
+        *
+        * Watch files
+        *
+        **/
+        const files = yield getFiles(config, config.entry, null, null);
+        blockHeader('Build Style Watch');
+        yield asyncForEach(files, (file, index) => __awaiter(void 0, void 0, void 0, function* () {
+            const compiled = yield compileSass(file.data);
+            file.css = compiled.css;
+            const linted = yield lintFile(file.data);
+            file.lint = linted;
+            const write = yield writeData(file, config);
+            if (index > 0)
+                blockMid();
+            yield logFile(file, write);
+        }));
+        setTimeout(() => {
+            blockFooter();
+        }, 0);
+    }
+    else {
+        /**
+        *
+        * Build All files
+        *
+        **/
+        blockHeader('Build Styles');
+        blockMid('Config');
+        yield blockSettings(config);
+        blockMid('Files');
+        const files = yield getFiles(config, config.entry, null, null);
+        yield asyncForEach(files, (file) => __awaiter(void 0, void 0, void 0, function* () {
+            const compiled = yield compileSass(file.data);
+            file.css = compiled.css;
+            const linted = yield lintFile(file.data);
+            file.lint = linted;
+            const write = yield writeData(file, config);
+            blockMid();
+            yield logFile(file, write);
+        }));
+        setTimeout(() => {
+            blockFooter();
+        }, 100);
+    }
 }))();
 //# sourceMappingURL=index.js.map

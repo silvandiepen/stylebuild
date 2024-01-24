@@ -2,15 +2,14 @@
 "use strict";
 
 import { getArgs } from '@sil/args';
-import { getFiles } from "./get";
-import { getConfig } from './config';
+import { getFiles } from "./get.js";
+import { getConfig } from './config.js';
 import { blockSettings, blockHeader, blockFooter, blockLine, blockMid } from 'cli-block';
-import { asyncForEach } from './utils';
-import { compileSass } from './sass';
-import { lintFile } from './lint';
-import { logFile } from './log';
-import { write } from 'fs';
-import { writeData } from './filesystem';
+import { asyncForEach } from './utils.js';
+import { compileSass } from './sass.js';
+import { lintFile } from './lint.js';
+import { logFile } from './log.js';
+import { writeData } from './filesystem.js';
 
 const args = getArgs();
 
@@ -18,29 +17,76 @@ const args = getArgs();
 
 (async () => {
 
-    blockHeader();
-
-    blockMid('Config')
     const config = getConfig(args);
 
-    await blockSettings(config);
+    if (args.watch) {
 
-    blockMid('Files')
+        /**
+        *
+        * Watch files
+        *  
+        **/
 
-    const files = await getFiles(config, config.entry, null, null);
+        const files = await getFiles(config, config.entry, null, null);
 
-    await asyncForEach(files, async (file, index) => {
-        const compiled = await compileSass(file.data);
-        file.css = compiled.css;
+        blockHeader('Build Style Watch');
+        await asyncForEach(files, async (file, index) => {
 
-        const linted = await lintFile(file.data);
+            const compiled = await compileSass(file.data);
+            file.css = compiled.css;
 
-        file.lint = linted;
+            const linted = await lintFile(file.data);
 
-        const write = await writeData(file, config);
-        await logFile(file, write);
+            file.lint = linted;
+            const write = await writeData(file, config);
+            if (index > 0) blockMid()
+            await logFile(file, write);
 
-    });
+        });
+        setTimeout(() => {
+            blockFooter();
+        }, 0)
+
+    } else {
+        /**
+        *
+        * Build All files
+        *  
+        **/
+
+
+
+        blockHeader('Build Styles');
+
+        blockMid('Config')
+
+        await blockSettings(config);
+
+        blockMid('Files')
+
+        const files = await getFiles(config, config.entry, null, null);
+
+        await asyncForEach(files, async (file) => {
+
+
+            const compiled = await compileSass(file.data);
+            file.css = compiled.css;
+
+            const linted = await lintFile(file.data);
+
+            file.lint = linted;
+
+            const write = await writeData(file, config);
+
+            blockMid();
+            await logFile(file, write);
+
+        });
+        setTimeout(() => {
+            blockFooter();
+        }, 100)
+    }
+
 
 })();
 

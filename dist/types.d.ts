@@ -1,6 +1,6 @@
 import { LintResult, type Warning } from "stylelint";
 export interface Config {
-    watching: boolean;
+    watch: boolean;
     entry: string;
     outputDir: string;
     global: string[];

@@ -28,8 +28,9 @@ const getBuildConfig = () => {
     if (Object.keys(buildConfigCache).length > 0) {
         return buildConfigCache;
     }
-    if (existsSync(".stylebuild.json")) {
-        const file = readFileSync(".stylebuild.json", 'utf8');
+    const fileName = ".stylebuild.json";
+    if (existsSync(fileName)) {
+        const file = readFileSync(fileName, 'utf8');
         buildConfigCache = JSON.parse(file);
         return JSON.parse(file);
     }

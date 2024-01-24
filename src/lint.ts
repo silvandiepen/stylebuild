@@ -1,25 +1,19 @@
-import { existsSync, readFileSync } from "fs";
-
 import styleLint, { type LintResult, type Warning } from 'stylelint';
-import { Lint } from "./types";
 import { blue, dim } from "cli-block";
+
+import { Lint } from "./types.js";
+import { resolveProjectFile, resolvePackageFile } from "./get.js";
 
 let lintConfigCache = {};
 const getStylelintConfig = () => {
-    if (Object.keys(lintConfigCache).length > 0) {
-        return lintConfigCache;
-    }
-    if (existsSync(".stylelintrc")) {
-        const file = readFileSync(".stylelintrc", 'utf8');
-        lintConfigCache = JSON.parse(file);
-        return JSON.parse(file);
-    }
-    const defaultConfig = {
-        extends: "stylelint-config-recommended",
-        rules: {}
-    }
-    lintConfigCache = defaultConfig;
-    return defaultConfig;
+    if (Object.keys(lintConfigCache).length > 0) return lintConfigCache;
+
+    const configFiles = [".stylelintrc", ".stylelintrc.json"];
+    const projectCfg = resolveProjectFile(configFiles)[0];
+    const packageCfg = resolvePackageFile(configFiles)[0];
+    const config = projectCfg || packageCfg;
+
+    return JSON.parse(config);
 }
 
 
@@ -70,7 +64,7 @@ export const lintFile = async (data: string): Promise<Lint> => {
     // if (hasProblems(reportData)) return { problems: false, ...reportData } as Lint;
 
 
-    return { problems: hasProblems(reportData), ...{ ...reportData, warnings: reportData.warnings.length ? reportData.warnings.map((warning) => ({ ...warning, text: warning.text.replace(`(${warning.rule})`,'').trim(), example: getLines(data, warning) })) : [] } }
+    return { problems: hasProblems(reportData), ...{ ...reportData, warnings: reportData.warnings.length ? reportData.warnings.map((warning) => ({ ...warning, text: warning.text.replace(`(${warning.rule})`, '').trim(), example: getLines(data, warning) })) : [] } }
 
 
 }

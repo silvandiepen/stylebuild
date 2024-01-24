@@ -1,9 +1,76 @@
 
-import { readdirSync, statSync, readFileSync } from 'fs';
-import { join } from 'path';
-import { asyncForEach } from './utils';
+import { fileURLToPath } from 'url';
+import { readdirSync, statSync, readFileSync, existsSync } from 'fs';
+import { join,dirname } from 'path';
+import { asyncForEach } from './utils.js';
 
-import { File, Config } from "./types"
+import { File, Config } from "./types.js"
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const resolveCache = {
+    project: {},
+    package: {}
+}
+
+const createResolveCacheIdentifier = (files: string[]) => {
+    return files.join('').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+
+export const resolveFile = (fileNames: string[]): string[] => {
+    const result: string[] = [];
+
+    fileNames.forEach((fileName) => {
+
+        const file = existsSync(fileName);
+        if (!file) return;
+
+        if (statSync(fileName).isDirectory()) {
+            const subFiles = readdirSync(fileName);
+            const subFilesResolved = resolveFile(subFiles.map((subFile) => {
+                return join(fileName, subFile)
+            }))
+            result.push(...subFilesResolved);
+        } else {
+            const fileData = readFileSync(fileName, 'utf8');
+            result.push(fileData);
+        }
+    })
+    return result;
+}
+export const resolveProjectFile = (files: string[]): string[] => {
+    const identifier = createResolveCacheIdentifier(files);
+
+    if (resolveCache.project[identifier]) {
+        return resolveCache.project[identifier];
+    }
+
+
+    const resolvedFile = resolveFile(files.map((file) => {
+        return join(__dirname, "../", file)
+    }
+    ))
+    resolveCache.project[identifier] = resolvedFile
+
+    return resolvedFile;
+}
+export const resolvePackageFile = (files: string[]): string[] => {
+    const identifier = createResolveCacheIdentifier(files);
+
+    if (resolveCache.package[identifier]) {
+        return resolveCache.package[identifier];
+    }
+    const resolvedFile = resolveFile(files.map((file) => {
+        return join(process.cwd(), file)
+    }))
+
+    resolveCache.package[identifier] = resolvedFile
+
+    return resolvedFile;
+
+}
 
 export const getFileData = async (file: File, config: Config) => {
     const { cache } = config || { cache: { data: {} } };
@@ -40,9 +107,9 @@ export const getFiles = async (config: Config, base: string, files: string[], re
         const date = statSync(newbase).mtime;
 
 
-        const age = ((new Date()).getTime() - date.getTime()) / 1000;
+        const age = ((new Date()).getTime() - date.getTime()) / 10000;
 
-        if (config.watching && age > 1) return;
+        if (config.watch && age > 1) return;
 
         const identifier = (fileName + `${date}`).toLowerCase().replace(/[^a-z0-9]/g, '');
         const currentFile: File = { path: filePath, name: fileName, date, id: identifier, data: '' }

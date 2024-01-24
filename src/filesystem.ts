@@ -6,11 +6,9 @@ export const writeData = async (file: File, config: Config): Promise<boolean> =>
 
     const { name, css } = file;
 
+
     const path = (config.outputDir || './dist') + '/' + name.replace('.scss', '.css');
     const dir = path.substring(0, path.lastIndexOf('/'));
-
-
-    if (css == '') return false;
 
     try {
 

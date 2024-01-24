@@ -6,18 +6,20 @@
   "bin": {
     "stylebuild": "dist/index.js"
   },
-  "type": "commonjs",
+  "type": "module",
   "exports": "./dist/index.js",
   "scripts": {
     "dev": "tsc -w",
     "build": "tsc",
-    "test": "node dist/index.js --watch --entry ./test-src --outputDir ./test-dist"
+    "test": "node dist/index.js --entry ./test-src --outputDir ./test-dist",
+    "test:watch": "node dist/index.js --watch --entry ./test-src --outputDir ./test-dist"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.11.5",
     "cli-block": "^1.4.2",
+    "esm": "^3.2.25",
     "sass": "^1.70.0",
     "stylelint": "^16.2.0",
     "stylelint-config-standard": "^36.0.0",
@@ -25,6 +27,7 @@
   },
   "dependencies": {
     "@sil/args": "^0.1.0",
+    "stylelint-config-recommended": "^14.0.0",
     "turbowatch": "^2.29.4"
   }
 }
