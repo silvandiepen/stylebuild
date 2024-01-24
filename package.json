@@ -18,14 +18,14 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.11.5",
-    "cli-block": "^1.4.2",
-    "esm": "^3.2.25",
-    "sass": "^1.70.0",
-    "stylelint": "^16.2.0",
-    "stylelint-config-standard": "^36.0.0",
+  
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "cli-block": "^1.4.2",
+    "sass": "^1.70.0",
+    "stylelint": "^16.2.0",
+    "stylelint-config-standard": "^36.0.0",
     "@sil/args": "^0.1.0",
     "stylelint-config-recommended": "^14.0.0",
     "turbowatch": "^2.29.4"
