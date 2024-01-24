@@ -103,4 +103,8 @@ export const getFiles = (config, base, files, result) => __awaiter(void 0, void 
     }));
     return result;
 });
+export const getPackageJson = () => {
+    const data = readFileSync(join(__dirname, '../package.json'), 'utf8');
+    return JSON.parse(data);
+};
 //# sourceMappingURL=get.js.map

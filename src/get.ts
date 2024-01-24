@@ -120,3 +120,7 @@ export const getFiles = async (config: Config, base: string, files: string[], re
 
     return result
 }
+export const getPackageJson = () => {
+    const data = readFileSync(join(__dirname, '../package.json'), 'utf8');
+    return JSON.parse(data);
+}

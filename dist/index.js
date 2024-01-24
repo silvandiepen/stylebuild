@@ -10,9 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { getArgs } from '@sil/args';
-import { getFiles } from "./get.js";
+import { getFiles, getPackageJson } from "./get.js";
 import { getConfig } from './config.js';
-import { blockSettings, blockHeader, blockFooter, blockMid } from 'cli-block';
+import { blockSettings, blockHeader, blockFooter, blockMid, dim } from 'cli-block';
 import { asyncForEach } from './utils.js';
 import { compileSass } from './sass.js';
 import { lintFile } from './lint.js';
@@ -21,6 +21,7 @@ import { writeData } from './filesystem.js';
 const args = getArgs();
 (() => __awaiter(void 0, void 0, void 0, function* () {
     const config = getConfig(args);
+    const packageJson = getPackageJson();
     if (args.watch) {
         /**
         *
@@ -28,7 +29,7 @@ const args = getArgs();
         *
         **/
         const files = yield getFiles(config, config.entry, null, null);
-        blockHeader('Build Style Watch');
+        blockHeader(`Build Styles Watch ${dim(packageJson.version)}`);
         yield asyncForEach(files, (file, index) => __awaiter(void 0, void 0, void 0, function* () {
             const compiled = yield compileSass(file.data);
             file.css = compiled.css;
@@ -49,7 +50,7 @@ const args = getArgs();
         * Build All files
         *
         **/
-        blockHeader('Build Styles');
+        blockHeader(`Build Styles ${dim(packageJson.version)}`);
         blockMid('Config');
         yield blockSettings(config);
         blockMid('Files');

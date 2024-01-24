@@ -2,9 +2,9 @@
 "use strict";
 
 import { getArgs } from '@sil/args';
-import { getFiles } from "./get.js";
+import { getFiles, getPackageJson } from "./get.js";
 import { getConfig } from './config.js';
-import { blockSettings, blockHeader, blockFooter, blockLine, blockMid } from 'cli-block';
+import { blockSettings, blockHeader, blockFooter, blockLine, blockMid, dim } from 'cli-block';
 import { asyncForEach } from './utils.js';
 import { compileSass } from './sass.js';
 import { lintFile } from './lint.js';
@@ -18,6 +18,8 @@ const args = getArgs();
 (async () => {
 
     const config = getConfig(args);
+const packageJson = getPackageJson();
+
 
     if (args.watch) {
 
@@ -29,7 +31,7 @@ const args = getArgs();
 
         const files = await getFiles(config, config.entry, null, null);
 
-        blockHeader('Build Style Watch');
+        blockHeader(`Build Styles Watch ${dim(packageJson.version)}`);
         await asyncForEach(files, async (file, index) => {
 
             const compiled = await compileSass(file.data);
@@ -56,7 +58,7 @@ const args = getArgs();
 
 
 
-        blockHeader('Build Styles');
+        blockHeader(`Build Styles ${dim(packageJson.version)}`);
 
         blockMid('Config')
 
