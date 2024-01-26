@@ -14,6 +14,7 @@ export const compileSass = (file) => __awaiter(void 0, void 0, void 0, function*
         return result;
     }
     catch (e) {
+        console.log(e);
         return e;
     }
 });

@@ -42,7 +42,7 @@ const args = getArgs();
         }));
         setTimeout(() => {
             blockFooter();
-        }, 0);
+        }, 100);
     }
     else {
         /**
